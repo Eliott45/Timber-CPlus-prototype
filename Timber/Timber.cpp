@@ -1,4 +1,5 @@
 ﻿#include <SFML/Graphics.hpp>
+#include <sstream>
 
 using namespace sf;
 
@@ -68,6 +69,37 @@ int main()
 
 	// Track whether the game is running
 	bool paused = true;
+
+	int score = 0;
+
+	Text messageText;
+	Text scoreText;
+
+	Font font;
+	font.loadFromFile("fonts/KOMIKAP_.ttf");
+
+	messageText.setFont(font);
+	scoreText.setFont(font);
+
+	messageText.setString("Press Enter to start!");
+	scoreText.setString("Score = 0");
+
+	messageText.setCharacterSize(75);
+	scoreText.setCharacterSize(100);
+
+	messageText.setFillColor(Color::White);
+	scoreText.setFillColor(Color::White);
+
+	// Position the text
+	FloatRect textRect = messageText.getLocalBounds();
+
+	messageText.setOrigin(textRect.left +
+		textRect.width / 2.0f,
+		textRect.top +
+		textRect.height / 2.0f);
+
+	messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+	scoreText.setPosition(20, 20);
 
 	// Create and open a window for the game
 	RenderWindow window(vm, "Timber!!!", Style::Fullscreen);
@@ -194,6 +226,11 @@ int main()
 					cloud3Active = false;
 				}
 			}
+
+			// Update the score text
+			std::stringstream ss;
+			ss << "Score = " << score;
+			scoreText.setString(ss.str());
 		}
 
 		window.draw(spriteBackground);
@@ -208,6 +245,13 @@ int main()
 
 		// Draw the insect
 		window.draw(spriteBee);
+
+		window.draw(scoreText);
+
+		if (paused)
+		{
+			window.draw(messageText);
+		}
 
 		// Show everything we just drew
 		window.display();
