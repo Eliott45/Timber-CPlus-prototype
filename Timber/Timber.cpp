@@ -1,14 +1,46 @@
 ﻿#include <sstream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <iostream>
 
+using namespace std;
 using namespace sf;
 
 const int NUM_BRANCHES = 6;
 Sprite branches[NUM_BRANCHES];
-
 enum class side { LEFT, RIGHT, NONE };
 side branchPositions[NUM_BRANCHES];
+
+SoundBuffer chopBuffer;
+SoundBuffer deathBuffer;
+SoundBuffer outBuffer;
+
+Sound chop;
+Sound death;
+Sound outOfTime;
+
+SoundBuffer loadSoundBuffer(string soundPath) {
+	SoundBuffer buffer;
+
+	if (buffer.loadFromFile(soundPath)) {
+		cout << "File uploaded successfully. Path: " << soundPath << endl;
+	}
+	else {
+		cout << "Failed to upload file. Path: " << soundPath << endl;
+	}
+
+	return buffer;
+}
+
+void loadSounds() {
+	chopBuffer = loadSoundBuffer("sounds/chop.wav");
+	deathBuffer = loadSoundBuffer("sounds/death.wav");
+	outBuffer = loadSoundBuffer("sounds/out_of_time.wav");
+
+	chop.setBuffer(chopBuffer);
+	death.setBuffer(deathBuffer);
+	outOfTime.setBuffer(outBuffer);
+}
 
 void updateBranches(int seed) {
 	// Move all the branches down one place
@@ -206,22 +238,7 @@ int main()
 	bool acceptInput = false;
 
 	// Prepare the sounds
-	// The player chopping sound
-	SoundBuffer chopBuffer;
-	chopBuffer.loadFromFile("sounds/chop.wav");
-	Sound chop;
-	chop.setBuffer(chopBuffer);
-	// The player has met his end under a branch
-	SoundBuffer deathBuffer;
-	deathBuffer.loadFromFile("sounds/death.wav");
-	Sound death;
-	death.setBuffer(deathBuffer);
-	// Out of time
-	SoundBuffer ootBuffer;
-	ootBuffer.loadFromFile("sounds/out_of_time.wav");
-	Sound outOfTime;
-	outOfTime.setBuffer(ootBuffer);
-
+	loadSounds();
 
 	while (window.isOpen())
 	{
