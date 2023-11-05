@@ -201,8 +201,24 @@ int main()
 	float logSpeedX = 1000;
 	float logSpeedY = -1500;
 
+	// Control the player input
+	bool acceptInput = false;
+
 	while (window.isOpen())
 	{
+		Event event;
+
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::KeyReleased && !paused)
+			{
+				// Listen for key presses again
+				acceptInput = true;
+				// hide the axe
+				spriteAxe.setPosition(2000, spriteAxe.getPosition().y);
+			}
+		}
+
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
 			window.close();
@@ -215,6 +231,68 @@ int main()
 
 			score = 0;
 			timeRemaining = 6;
+
+			// Make all the branches disappear - starting in the second position
+			for (int i = 1; i < NUM_BRANCHES; i++)
+			{
+				branchPositions[i] = side::NONE;
+			}
+
+			// Make sure the gravestone is hidden
+			spriteRIP.setPosition(675, 2000);
+
+			// Move the player into position
+			spritePlayer.setPosition(580, 720);
+			acceptInput = true;
+		}
+
+		// Wrap the player controls to
+		// Make sure we are accepting input
+		if (acceptInput)
+		{
+			// First handle pressing the right cursor key
+			if (Keyboard::isKeyPressed(Keyboard::Right))
+			{
+				// Make sure the player is on the right
+				playerSide = side::RIGHT;
+				score++;
+
+				// Add to the amount of time remaining
+				timeRemaining += (2 / score) + .15;
+				spriteAxe.setPosition(AXE_POSITION_RIGHT,spriteAxe.getPosition().y);
+				spritePlayer.setPosition(1200, 720);
+
+				// Update the branches
+				updateBranches(score);
+
+				// Set the log flying to the left
+				spriteLog.setPosition(810, 720);
+				logSpeedX = -5000;
+				logActive = true;
+				acceptInput = false;
+			}
+
+			// Handle the left cursor key
+			if (Keyboard::isKeyPressed(Keyboard::Left))
+			{
+				// Make sure the player is on the left
+				playerSide = side::LEFT;
+				score++;
+
+				// Add to the amount of time remaining
+				timeRemaining += (2 / score) + .15;
+				spriteAxe.setPosition(AXE_POSITION_LEFT, spriteAxe.getPosition().y);
+				spritePlayer.setPosition(580, 720);
+
+				// update the branches
+				updateBranches(score);
+
+				// set the log flying
+				spriteLog.setPosition(810, 720);
+				logSpeedX = 5000;
+				logActive = true;
+				acceptInput = false;
+			}
 		}
 
 		// Clear everything from the last fram
